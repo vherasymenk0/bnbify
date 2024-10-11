@@ -1,7 +1,7 @@
-interface Props {}
+import { LuUser2 } from 'react-icons/lu'
 
-export const UserIcon = ({}: Props) => {
+export const UserIcon = () => {
   return (
-    <div>UserIcon</div>
+    <LuUser2 className="w-6 h-6 bg-primary text-white rounded-full">UserIcon</LuUser2>
   )
 }
