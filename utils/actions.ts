@@ -32,3 +32,20 @@ export const createProfileAction: ActionFunction = async (prevState, formData) =
   }
   redirect('/')
 }
+
+
+export const fetchProfileImage = async () => {
+  const user = await currentUser()
+  if (!user) return undefined
+
+  const profile = await db.profile.findUnique({
+    where: {
+      clerkId: user.id
+    },
+    select: {
+      profileImage: true
+    }
+  })
+
+  return profile?.profileImage
+}
