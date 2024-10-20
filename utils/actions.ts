@@ -1,7 +1,7 @@
 'use server'
 
 import { ActionFunction } from '~/utils/types'
-import { profileSchema, validateWitZodSchema } from '~/utils/schemas'
+import { imageSchema, profileSchema, validateWitZodSchema } from '~/utils/schemas'
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import db from '~/utils/db'
 import { redirect } from 'next/navigation'
@@ -61,6 +61,16 @@ export const fetchProfileImage = async () => {
   })
 
   return profile?.profileImage
+}
+
+export const updateProfileImageAction = async (prevState: any, formData: FormData) => {
+  const image = formData.get('image') as File
+  try {
+    const validatedImg = validateWitZodSchema(imageSchema, { image })
+  } catch (e) {
+    return renderError(e)
+  }
+  return { message: 'updateProfileImage' }
 }
 
 export const fetchProfile = async () => {
