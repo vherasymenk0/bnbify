@@ -6,6 +6,7 @@ import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import db from '~/utils/db'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { uploadImage } from '~/utils/supabase'
 
 const getAuthUser = async () => {
   const user = await currentUser()
@@ -64,13 +65,22 @@ export const fetchProfileImage = async () => {
 }
 
 export const updateProfileImageAction = async (prevState: any, formData: FormData) => {
-  const image = formData.get('image') as File
+  const user = await getAuthUser()
   try {
+    const image = formData.get('image') as File
     const validatedImg = validateWitZodSchema(imageSchema, { image })
+    const fullPath = await uploadImage(validatedImg.image)
+
+    await db.profile.update({
+      where: { clerkId: user.id }, data: {
+        profileImage: fullPath
+      }
+    })
+    revalidatePath('/profile')
   } catch (e) {
     return renderError(e)
   }
-  return { message: 'updateProfileImage' }
+  return { message: 'Profile image updated successfully' }
 }
 
 export const fetchProfile = async () => {
