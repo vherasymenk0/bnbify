@@ -1,10 +1,26 @@
 'use server'
 
 import { ActionFunction } from '~/utils/types'
-import { profileSchema } from '~/utils/schemas'
+import { profileSchema, validateWitZodSchema } from '~/utils/schemas'
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import db from '~/utils/db'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
+
+const getAuthUser = async () => {
+  const user = await currentUser()
+  if (!user) throw new Error('You must be logged in to access this route')
+  // @ts-ignore
+  if (!user.privateMetadata.hasProfile) redirect('/profile/create')
+  return user
+}
+
+const renderError = (error: unknown) => {
+  console.log(error)
+  return {
+    message: error instanceof Error ? error.message : 'An error occurred',
+  }
+}
 
 export const createProfileAction: ActionFunction = async (prevState, formData) => {
   try {
@@ -12,7 +28,7 @@ export const createProfileAction: ActionFunction = async (prevState, formData) =
     if (!user) throw new Error('Please login to create a profile')
 
     const rawData = Object.fromEntries(formData)
-    const validatedFields = profileSchema.parse(rawData)
+    const validatedFields = validateWitZodSchema(profileSchema, rawData)
     await db.profile.create({
       data: {
         clerkId: user.id,
@@ -27,17 +43,14 @@ export const createProfileAction: ActionFunction = async (prevState, formData) =
       }
     })
   } catch (e) {
-    const message = e instanceof Error ? e.message : 'An error occurred'
-    return { message }
+    return renderError(e)
   }
   redirect('/')
 }
 
 
 export const fetchProfileImage = async () => {
-  const user = await currentUser()
-  if (!user) return undefined
-
+  const user = await getAuthUser()
   const profile = await db.profile.findUnique({
     where: {
       clerkId: user.id
@@ -48,4 +61,35 @@ export const fetchProfileImage = async () => {
   })
 
   return profile?.profileImage
+}
+
+export const fetchProfile = async () => {
+  const user = await getAuthUser()
+  const profile = await db.profile.findUnique({
+    where: {
+      clerkId: user.id
+    }
+  })
+
+  if (!profile) redirect('/profile/create')
+  return profile
+}
+
+export const updateProfileAction = async (prevState: any, formData: FormData) => {
+  const user = await getAuthUser()
+  try {
+    const rawData = Object.fromEntries(formData)
+    const validatedFields = validateWitZodSchema(profileSchema, rawData)
+
+    await db.profile.update({
+      where: {
+        clerkId: user.id
+      },
+      data: validatedFields
+    })
+    revalidatePath('/profile')
+    return { message: 'Profile updated successfully' }
+  } catch (e) {
+    return renderError(e)
+  }
 }
