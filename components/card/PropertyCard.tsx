@@ -43,9 +43,7 @@ function PropertyCard({ property }: { property: PropertyCardProps }) {
         </div>
       </Link>
       <div className="absolute top-5 right-5 z-5">
-        <div className="absolute top-5 right-5 z-5">
-          <FavoriteToggleButton propertyId={propertyId}/>
-        </div>
+        <FavoriteToggleButton propertyId={propertyId}/>
       </div>
     </article>
   )
