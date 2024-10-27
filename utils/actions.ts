@@ -1,7 +1,7 @@
 'use server'
 
 import { ActionFunction } from '~/utils/types'
-import { imageSchema, profileSchema, validateWitZodSchema } from '~/utils/schemas'
+import { imageSchema, profileSchema, propertySchema, validateWithZodSchema } from '~/utils/schemas'
 import { clerkClient, currentUser } from '@clerk/nextjs/server'
 import db from '~/utils/db'
 import { redirect } from 'next/navigation'
@@ -29,7 +29,7 @@ export const createProfileAction: ActionFunction = async (prevState, formData) =
     if (!user) throw new Error('Please login to create a profile')
 
     const rawData = Object.fromEntries(formData)
-    const validatedFields = validateWitZodSchema(profileSchema, rawData)
+    const validatedFields = validateWithZodSchema(profileSchema, rawData)
     await db.profile.create({
       data: {
         clerkId: user.id,
@@ -68,7 +68,7 @@ export const updateProfileImageAction = async (prevState: any, formData: FormDat
   const user = await getAuthUser()
   try {
     const image = formData.get('image') as File
-    const validatedImg = validateWitZodSchema(imageSchema, { image })
+    const validatedImg = validateWithZodSchema(imageSchema, { image })
     const fullPath = await uploadImage(validatedImg.image)
 
     await db.profile.update({
@@ -99,7 +99,7 @@ export const updateProfileAction = async (prevState: any, formData: FormData) =>
   const user = await getAuthUser()
   try {
     const rawData = Object.fromEntries(formData)
-    const validatedFields = validateWitZodSchema(profileSchema, rawData)
+    const validatedFields = validateWithZodSchema(profileSchema, rawData)
 
     await db.profile.update({
       where: {
@@ -112,4 +112,29 @@ export const updateProfileAction = async (prevState: any, formData: FormData) =>
   } catch (e) {
     return renderError(e)
   }
+}
+
+export const createPropertyAction = async (
+  prevState: any,
+  formData: FormData
+): Promise<{ message: string }> => {
+  const user = await getAuthUser()
+  try {
+    const rawData = Object.fromEntries(formData)
+    const file = formData.get('image') as File
+    const validatedFields = validateWithZodSchema(propertySchema, rawData)
+    const validatedFile = validateWithZodSchema(imageSchema, { image: file })
+    const fullPath = await uploadImage(validatedFile.image)
+
+    await db.property.create({
+      data: {
+        ...validatedFields,
+        image: fullPath,
+        profileId: user.id,
+      },
+    })
+  } catch (error) {
+    return renderError(error)
+  }
+  redirect('/')
 }

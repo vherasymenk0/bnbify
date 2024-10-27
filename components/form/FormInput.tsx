@@ -1,13 +1,8 @@
 import { Label } from '~/components/ui/label'
-import { Input } from '~/components/ui/input'
+import { Input, InputProps as IProps } from '~/components/ui/input'
 
-interface Props {
-  name: string
-  type: string
+interface InputProps extends IProps {
   label?: string
-  defaultValue?: string
-  placeholder?: string
-  required?: boolean
 }
 
 export const FormInput = ({
@@ -17,10 +12,18 @@ export const FormInput = ({
   defaultValue,
   placeholder,
   required = true
-}: Props) => {
+}: InputProps) => {
   return (
     <div className="mb-2">
-      {label ? <Label htmlFor={name} className="capitalize">{label}</Label> : null}
+      {label ?
+        <Label
+          htmlFor={name}
+          className="capitalize"
+        >
+          {label}
+        </Label>
+        : null
+      }
       <Input
         id={name}
         type={type}
