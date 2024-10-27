@@ -1,4 +1,4 @@
-import { fetchPropertyDetails } from '~/utils/actions'
+import { fetchPropertyDetails, findExistingReview } from '~/utils/actions'
 import { redirect } from 'next/navigation'
 import BreadCrumbs from '~/components/properties/BreadCrumbs'
 import FavoriteToggleButton from '~/components/card/FavoriteToggleButton'
@@ -13,6 +13,9 @@ import { Separator } from '~/components/ui/separator'
 import Amenities from '~/components/properties/Amenities'
 import dynamic from 'next/dynamic'
 import { Skeleton } from '~/components/ui/skeleton'
+import SubmitReview from '~/components/reviews/SubmitReview'
+import PropertyReviews from '~/components/reviews/PropertyReviews'
+import { auth } from '@clerk/nextjs/server'
 
 const DynamicMap = dynamic(
   () => import('~/components/properties/PropertyMap'),
@@ -24,9 +27,14 @@ const DynamicMap = dynamic(
 
 async function PropertyDetailsPage({ params }: { params: { id: string } }) {
   const property = await fetchPropertyDetails(params.id)
-  if (!property) redirect('/')
-  const firstName = property.profile.firstName
-  const profileImage = property.profile.profileImage
+  const { userId } = auth()
+  if (!property || !userId) redirect('/')
+
+  const { firstName, profileImage, clerkId } = property.profile
+  const isNotOwner = clerkId !== userId
+  const isAlreadyLeftReview = await findExistingReview(userId, property.id)
+  const isAllowReview =
+    userId && isNotOwner && !isAlreadyLeftReview
 
   const { baths, bedrooms, beds, guests } = property
   const details = { baths, bedrooms, beds, guests }
@@ -62,12 +70,14 @@ async function PropertyDetailsPage({ params }: { params: { id: string } }) {
           <Separator className="mt-4"/>
           <Description description={property.description}/>
           <Amenities amenities={property.amenities}/>
-          <DynamicMap countryCode={property.country}/>;
+          <DynamicMap countryCode={property.country}/>
         </div>
         <div className="lg:col-span-4 flex flex-col items-center">
           <BookingCalendar/>
         </div>
       </section>
+      {isAllowReview ? <SubmitReview propertyId={property.id}/> : null}
+      <PropertyReviews propertyId={property.id}/>
     </section>
   )
 }
