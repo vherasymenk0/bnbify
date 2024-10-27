@@ -4,8 +4,8 @@ async function PropertyRating({
   propertyId,
   inPage,
 }: {
-  propertyId: string;
-  inPage: boolean;
+  propertyId: string
+  inPage: boolean
 }) {
   const rating = 4.7
   const count = 100
