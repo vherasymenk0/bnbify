@@ -23,10 +23,10 @@ import {
 } from 'react-icons/fi'
 
 export type Amenity = {
-  name: string;
-  icon: IconType;
-  selected: boolean;
-};
+  name: string
+  icon: IconType
+  selected: boolean
+}
 
 export const amenities: Amenity[] = [
   { name: 'unlimited cloud storage', icon: FiCloud, selected: false },
