@@ -8,3 +8,5 @@ export const formatBytes = (bytes: number, decimals = 2) => {
 
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 }
+
+export const isAdminUser = (id: string | null) => id === process.env.ADMIN_USER_ID

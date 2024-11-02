@@ -5,7 +5,7 @@ import { Providers } from '~/app/providers'
 import { ClerkProvider } from '@clerk/nextjs'
 
 export const metadata: Metadata = {
-  title: 'HomeAway',
+  title: 'Bnbify',
   description: 'Feel at home, away from home',
 }
 
@@ -16,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
+      <html
+        lang="en"
+        suppressHydrationWarning
+      >
       <body>
       <Providers>
         <Navbar/>

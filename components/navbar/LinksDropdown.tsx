@@ -12,17 +12,28 @@ import { links } from '~/utils/links'
 import Link from 'next/link'
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from '@clerk/nextjs'
 import { SignOutLink } from '~/components/navbar/SignOutLink'
+import { auth } from '@clerk/nextjs/server'
+import { isAdminUser } from '~/utils/helpers'
 
 export const LinksDropdown = () => {
+  const { userId } = auth()
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-4 max-w-[100px]">
+        <Button
+          variant="outline"
+          className="gap-4 max-w-[100px]"
+        >
           <LuAlignLeft className="w-6 h-6"/>
           <UserIcon/>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-52" align="start" sideOffset={10}>
+      <DropdownMenuContent
+        className="w-52"
+        align="start"
+        sideOffset={10}
+      >
         <SignedOut>
           <DropdownMenuItem>
             <SignInButton mode="modal">
@@ -38,9 +49,14 @@ export const LinksDropdown = () => {
         </SignedOut>
         <SignedIn>
           {links.map((link) => {
+            if (link.label === 'admin' && !isAdminUser(userId)) return null
+
             return (
               <DropdownMenuItem key={link.href}>
-                <Link href={link.href} className="capitalize w-full">
+                <Link
+                  href={link.href}
+                  className="capitalize w-full"
+                >
                   {link.label}
                 </Link>
               </DropdownMenuItem>
