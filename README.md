@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bnbify
 
-## Getting Started
+## Project Overview
 
-First, run the development server:
+**Bnbify** is a full-stack web application designed to offer short-term rental services, inspired by Airbnb. This
+project aims to replicate the core functionalities of Airbnb, including booking properties, viewing listings, and
+managing user accounts. Additionally, Bnbify includes an admin account with access to project statistics.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The project accessible at [https://bnbify.vercel.app/](https://bnbify.vercel.app/).
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend:** Next.js, Tailwind CSS, Shadcn UI, Zustand
+- **Backend:** Prisma ORM, Supabase (for database management), Stripe (for payment integration)
+- **Utilities:** Axios, Leaflet (for map features), Zod (for schema validation)
+- **Authentication:** Clerk
+- **Deployment:** Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Features
 
-## Learn More
+- **User Authentication**: Secure login and registration handled by Clerk.
+- **Listings & Bookings**: Users can view listings, book properties, and manage their bookings.
+- **Map Integration**: Map-based property visualization using Leaflet and React Leaflet.
+- **Admin Dashboard**: Access to project statistics for admins to monitor platform performance.
+- **Payment Processing**: Stripe integration for seamless and secure payment handling.
+- **Dark Mode Support**: Theme switching support via `next-themes`.
+- **Responsive Design**: Optimized for mobile and desktop experiences.
 
-To learn more about Next.js, take a look at the following resources:
+## How to Run the Project Locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Available Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `yarn dev` - Starts the development server.
+- `yarn build` - Generates Prisma client and builds the application for production.
+- `yarn start`  Starts the application in production mode.
+- `yarn lint` Runs ESLint to check for code quality issues.
