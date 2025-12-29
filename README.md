@@ -1,4 +1,4 @@
-# Bnbify1
+# Bnbify
 
 ## Project Overview
 
